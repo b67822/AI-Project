@@ -1,5 +1,12 @@
 package Code;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
+
 public class WaterSortSearch extends GenericSearch {
 	
 	
@@ -86,7 +93,50 @@ public class WaterSortSearch extends GenericSearch {
 	}
 
 	private String iterativeDeepeningSearch(Node initialNode) {
-		// TODO Auto-generated method stub
+		int depthLimit = 0;
+        while (true) {
+            String result = depthLimitedSearch(initialNode, depthLimit);
+            if (!result.equals("CUTOFF") && !result.equals("NOSOLUTION")) {
+                return result;
+            }
+            if (result.equals("NOSOLUTION")) {
+                return "NOSOLUTION";
+			}
+            depthLimit++;
+        }
+	}
+
+	private String depthLimitedSearch(Node initialNode, int depthLimit) {
+		Stack<Node> frontier = new Stack<>();
+        Set<String> explored = new HashSet<>();
+        frontier.push(new Node(initialNode, 0, 0, null, null, null));
+		while (!frontier.isEmpty()) {
+            Node currentNode = frontier.pop();
+            String currentState = currentNode.getState();
+			
+            if (currentNode.isGoal()) {
+				return currentNode.getSolution();
+            }
+
+
+            if (currentNode.getDepth() >= depthLimit) {
+                continue;
+            }
+
+
+            explored.add(currentState);
+            List<String> actions = generateActions(currentState);
+
+            for (String action : actions) {
+                String newState = applyAction(currentState, action);
+                if (!explored.contains(newState)) {
+                    Node childNode = new Node(currentNode, currentNode.getPathCost(),currentNode.getDepth()+1,null ,null, null , newState);
+                    frontier.push(childNode);
+                    explored.add(newState);
+                }
+            }
+        }
+
 		return null;
 	}
 
@@ -96,12 +146,79 @@ public class WaterSortSearch extends GenericSearch {
 	}
 
 	private String depthFirstSearch(Node initialNode) {
-		// TODO Auto-generated method stub
+		Stack<Node> frontier = new Stack<>();
+        Set<String> explored = new HashSet<>();
+
+		Node StartNode = new Node(initialNode, 0, 0, null, null, null);
+		frontier.add(initialNode);
+
+		while (!frontier.isEmpty()) {
+            Node currentNode = frontier.pop();
+            String currentState = currentNode.getState();
+
+            if (currentNode.isGoal()) {
+				return currentNode.getSolution();
+			}
+
+            explored.add(currentState);
+
+            List<String> actions = generateActions(currentState);
+
+            for (String action : actions) {
+                String newState = applyAction(currentState, action);
+
+                if (!explored.contains(newState)) {
+					Node childNode = new Node(currentNode, currentNode.getPathCost(),currentNode.getDepth()+1,null ,null, null , newState);
+                    frontier.push(childNode);
+                    explored.add(newState);  
+                }
+            }
+        }
 		return null;
 	}
 
 	private String breadthFirstSearch(Node initialNode) {
-		// TODO Auto-generated method stub
+		Queue<Node> frontier = new LinkedList<>();
+		Set<String> explored = new HashSet<>();
+
+		Node StartNode = new Node(initialNode, 0, 0, null, null, null);
+		frontier.add(initialNode);
+
+		while (!frontier.isEmpty()) {
+			Node currentNode = frontier.poll();
+			String currentState = currentNode.getState();
+
+			if (currentNode.isGoal()){
+				return currentNode.getSolution();
+			}
+
+			explored.add(currentState);
+
+			List<String> actions = generateActions(currentState);
+
+			for (String action : actions) {
+				String newState = applyAction(currentState, action);
+
+				if (!explored.contains(newState)) {
+					Node childNode = new Node(currentNode, currentNode.getPathCost(),currentNode.getDepth()+1,null ,null, null , newState);
+					frontier.add(childNode);
+					explored.add(newState);
+				}
+			}
+		}
+
 		return null;
+	}
+
+
+	private String applyAction(String currentState, String action) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'applyAction'");
+	}
+
+
+	private List<String> generateActions(String currentState) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'generateActions'");
 	}
 }
